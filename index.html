@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Кубик Рубика</title>
+    <style>
+      :root {
+        --cube-size: min(48vw, 300px);
+        --sticker-gap: 4px;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, #1f2742, #0e1324 60%);
+        color: #f1f4ff;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+
+      .scene {
+        perspective: 900px;
+        display: grid;
+        gap: 16px;
+        justify-items: center;
+      }
+
+      .cube {
+        width: var(--cube-size);
+        height: var(--cube-size);
+        position: relative;
+        transform-style: preserve-3d;
+        transform: rotateX(-28deg) rotateY(-38deg);
+        transition: transform 180ms ease-out;
+      }
+
+      .face {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sticker-gap);
+        padding: var(--sticker-gap);
+        background: #111;
+        border: 2px solid #0a0a0a;
+      }
+
+      .sticker {
+        border-radius: 6px;
+        border: 1px solid #00000066;
+        box-shadow: inset 0 4px 7px #ffffff22;
+      }
+
+      .front  { transform: translateZ(calc(var(--cube-size) / 2)); }
+      .back   { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2)); }
+      .right  { transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2)); }
+      .left   { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); }
+      .top    { transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2)); }
+      .bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); }
+
+      .front .sticker  { background: #00a84f; }
+      .back .sticker   { background: #0057ff; }
+      .right .sticker  { background: #e63b2e; }
+      .left .sticker   { background: #ff8c00; }
+      .top .sticker    { background: #fefefe; }
+      .bottom .sticker { background: #ffd500; }
+
+      .hint {
+        text-align: center;
+        line-height: 1.45;
+        opacity: 0.9;
+        font-size: 0.95rem;
+      }
+
+      kbd {
+        background: #0008;
+        border: 1px solid #fff3;
+        border-bottom-width: 2px;
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="scene">
+      <div class="cube" id="cube" aria-label="3D кубик Рубика"></div>
+      <p class="hint">
+        Вращение кубика: <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd><br />
+        <kbd>R</kbd> — сбросить положение
+      </p>
+    </main>
+
+    <script>
+      const cube = document.getElementById('cube');
+      const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+
+      for (const faceName of faces) {
+        const face = document.createElement('div');
+        face.className = `face ${faceName}`;
+
+        for (let i = 0; i < 9; i += 1) {
+          const sticker = document.createElement('div');
+          sticker.className = 'sticker';
+          face.append(sticker);
+        }
+
+        cube.append(face);
+      }
+
+      let rotationX = -28;
+      let rotationY = -38;
+
+      const applyRotation = () => {
+        cube.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+      };
+
+      window.addEventListener('keydown', (event) => {
+        const step = 12;
+
+        switch (event.key) {
+          case 'ArrowUp':
+            rotationX -= step;
+            break;
+          case 'ArrowDown':
+            rotationX += step;
+            break;
+          case 'ArrowLeft':
+            rotationY -= step;
+            break;
+          case 'ArrowRight':
+            rotationY += step;
+            break;
+          case 'r':
+          case 'R':
+          case 'к':
+          case 'К':
+            rotationX = -28;
+            rotationY = -38;
+            break;
+          default:
+            return;
+        }
+
+        event.preventDefault();
+        applyRotation();
+      });
+
+      applyRotation();
+    </script>
+  </body>
+</html>
